@@ -3,25 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antigravity — v3.0 Event Margin Engine</title>
+    <title>Antigravity v4.0 — Pro Event Manager</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=JetBrains+Mono:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0d0f14;
-            --s1: #111318;
-            --s2: #181c24;
-            --s3: #1f2433;
-            --s4: #252d40;
-            --bd: rgba(255,255,255,0.07);
-            --acc: #d4a843; /* Gold */
-            --acc-dim: rgba(212, 168, 67, 0.1);
-            --gr: #22c55e;
-            --am: #f59e0b;
-            --re: #ef4444;
-            --tx: #e8eaf0;
-            --mu: #7c859a;
+            --bg: #0d0f14; --s1: #111318; --s2: #181c24; --s3: #1f2433; --s4: #252d40;
+            --bd: rgba(255,255,255,0.07); --acc: #d4a843; --acc2: #e8c870;
+            --gr: #22c55e; --am: #f59e0b; --re: #ef4444; --tx: #e8eaf0; --mu: #7c859a;
             --sidebar-width: 260px;
         }
 
@@ -34,13 +24,14 @@
         .logo-box { width: 32px; height: 32px; background: var(--acc); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; color: #000; font-size: 18px; }
         .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: #fff; }
         
-        .nav-list { list-style: none; flex: 1; overflow-y: auto; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--mu); text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; border-right: 3px solid transparent; }
+        .nav-list { list-style: none; flex: 1; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--mu); text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; position: relative; }
         .nav-link:hover { color: #fff; background: var(--s2); }
-        .nav-link.active { color: var(--acc); background: var(--acc-dim); border-right-color: var(--acc); }
+        .nav-link.active { color: var(--acc); background: rgba(212, 168, 67, 0.08); }
+        .nav-badge { position: absolute; right: 24px; background: var(--re); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 800; }
 
         /* --- MAIN --- */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         header { height: 72px; background: var(--s1); border-bottom: 1px solid var(--bd); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
         header h1 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600; }
 
@@ -49,51 +40,65 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- COMPONENTS --- */
-        .card { background: var(--s2); border: 1px solid var(--bd); border-radius: 12px; padding: 24px; margin-bottom: 24px; position: relative; }
+        /* --- CARDS & TABLES --- */
+        .card { background: var(--s2); border: 1px solid var(--bd); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card-title { font-family: 'Syne', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--mu); }
+        .card-title { font-family: 'Syne', sans-serif; font-size: 14px; text-transform: uppercase; color: var(--mu); letter-spacing: 1px; }
         
         .table-wrap { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { padding: 12px 16px; font-size: 11px; color: var(--mu); text-transform: uppercase; border-bottom: 1px solid var(--bd); }
-        td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--bd); color: var(--tx); vertical-align: middle; }
-        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+        td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--bd); color: var(--tx); }
 
-        .btn { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { padding: 10px 20px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-gold { background: var(--acc); color: #000; }
-        .btn-gold:hover { background: var(--acc2); transform: translateY(-1px); }
         .btn-outline { background: transparent; border: 1px solid var(--s4); color: var(--tx); }
-        .btn-outline:hover { border-color: var(--acc); }
+        .btn-outline:hover { border-color: var(--acc); color: var(--acc); }
 
-        .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         .badge-green { background: rgba(34,197,94,.12); color: var(--gr); }
         .badge-amber { background: rgba(245,158,11,.12); color: var(--am); }
         .badge-red { background: rgba(239,68,68,.12); color: var(--re); }
         .badge-gray { background: var(--s4); color: var(--mu); }
 
-        .mono { font-family: 'JetBrains Mono', monospace; }
+        /* --- EVENT CARDS --- */
+        .evt-card { background: var(--s1); border: 1px solid var(--bd); border-radius: 16px; padding: 24px; margin-bottom: 16px; transition: 0.2s; position: relative; }
+        .evt-card:hover { border-color: var(--acc); transform: translateY(-2px); }
+        .evt-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; align-items: center; }
+        .evt-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .evt-meta { font-size: 12px; color: var(--mu); display: flex; gap: 12px; }
+        .evt-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
-        /* --- MODALS & PANELS --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; }
-        .modal { background: var(--s2); border: 1px solid var(--bd); width: 550px; border-radius: 16px; padding: 32px; box-shadow: 0 24px 48px rgba(0,0,0,0.5); }
-        
-        .side-panel { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: var(--s2); border-left: 1px solid var(--bd); z-index: 1001; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 40px; overflow-y: auto; box-shadow: -20px 0 40px rgba(0,0,0,0.3); }
-        .side-panel.open { right: 0; }
+        /* --- TABS --- */
+        .tabs { display: flex; gap: 8px; margin-bottom: 32px; border-bottom: 1px solid var(--bd); padding-bottom: 8px; }
+        .tab-link { padding: 10px 20px; color: var(--mu); cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
+        .tab-link.active { background: var(--acc-dim); color: var(--acc); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
+        /* --- FORMS --- */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-size: 11px; color: var(--mu); text-transform: uppercase; margin-bottom: 8px; }
         input, select, textarea { width: 100%; background: var(--s1); border: 1px solid var(--s4); padding: 12px; border-radius: 8px; color: #fff; font-family: inherit; }
         input:focus { border-color: var(--acc); }
 
-        .missing-banner { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); border-radius: 10px; padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        /* --- RIEPILOGO MARGINE --- */
+        .analysis-bar { height: 6px; background: var(--s4); border-radius: 3px; margin: 12px 0; overflow: hidden; }
+        .analysis-fill { height: 100%; background: var(--gr); transition: width 0.3s; }
 
-        #toast-container { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
-        .toast { background: var(--s3); border-left: 4px solid var(--acc); padding: 14px 24px; border-radius: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.5); animation: toastIn 0.3s ease-out; font-size: 13px; font-weight: 600; color: #fff; }
-        @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* --- REPORT PRINT --- */
+        #report-print { display: none; background: white; color: black; padding: 40px; font-family: 'Lato', sans-serif; }
+        @media print {
+            body * { visibility: hidden; }
+            #report-print, #report-print * { visibility: visible; }
+            #report-print { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+        }
 
-        .drop-zone { border: 2px dashed var(--s4); border-radius: 12px; padding: 32px; text-align: center; color: var(--mu); cursor: pointer; }
-        .drop-zone:hover { border-color: var(--acc); background: var(--s3); color: #fff; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        #toast-container { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast { background: var(--s3); border-left: 4px solid var(--acc); padding: 14px 24px; border-radius: 4px; box-shadow: 0 12px 32px rgba(0,0,0,0.5); animation: toastIn 0.3s; font-size: 13px; }
+        @keyframes toastIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
     </style>
 </head>
@@ -102,492 +107,420 @@
     <aside class="sidebar">
         <div class="logo"><div class="logo-box">A</div><span class="logo-text">ANTIGRAVITY</span></div>
         <nav class="nav-list">
-            <a href="#" class="nav-link active" onclick="nav('dashboard', this)"><i>📊</i> Dashboard</a>
-            <a href="#" class="nav-link" onclick="nav('events', this)"><i>🗓</i> Gestione Eventi</a>
+            <a href="#" class="nav-link" onclick="nav('dashboard', this)"><i>📊</i> Dashboard</a>
+            <a href="#" class="nav-link active" onclick="nav('events', this)"><i>🗓</i> Gestione Eventi <span class="nav-badge" id="badge-events">0</span></a>
             <a href="#" class="nav-link" onclick="nav('menu', this)"><i>🍽</i> Libreria Menu</a>
             <a href="#" class="nav-link" onclick="nav('ingredients', this)"><i>🧾</i> Ingredienti</a>
             <a href="#" class="nav-link" onclick="nav('clients', this)"><i>👤</i> Clienti</a>
-            <a href="#" class="nav-link" onclick="nav('kpi', this)"><i>▲</i> Margini & KPI</a>
             <a href="#" class="nav-link" onclick="nav('settings', this)"><i>⚙</i> Impostazioni</a>
         </nav>
     </aside>
 
     <main class="main-content">
         <header>
-            <h1 id="page-title">Dashboard</h1>
-            <div id="header-actions"></div>
+            <h1 id="page-title">Gestione Eventi</h1>
+            <div id="header-actions">
+                <button class="btn btn-gold" onclick="openNewEvent()">+ NUOVO EVENTO</button>
+            </div>
         </header>
 
         <div class="content-scroll">
             
             <!-- SECTION: DASHBOARD -->
-            <section id="s-dashboard" class="section active">
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px;">
-                    <div class="card"><div class="card-title">Ricavo Totale</div><div class="mono" style="font-size: 28px; font-weight: 700; margin-top: 10px;" id="kpi-rev">€ 0</div></div>
-                    <div class="card"><div class="card-title">Margine Medio</div><div class="mono" style="font-size: 28px; font-weight: 700; margin-top: 10px;" id="kpi-marg">0%</div></div>
-                    <div class="card"><div class="card-title">Piatti Catalogo</div><div class="mono" style="font-size: 28px; font-weight: 700; margin-top: 10px;" id="kpi-dishes">0</div></div>
-                </div>
+            <section id="s-dashboard" class="section">
                 <div class="card">
-                    <h2 class="card-title" style="margin-bottom: 16px;">Configurazione Rapida</h2>
-                    <button class="btn btn-gold" onclick="loadDemoData()">🎲 CARICA DATI DEMO DOPPIO MALTO</button>
-                    <p style="font-size: 12px; color: var(--mu); margin-top: 12px;">Carica istantaneamente 26 ingredienti e 6 piatti per testare il motore di calcolo.</p>
+                    <h2 class="card-title">Benvenuto in Antigravity v4.0</h2>
+                    <p style="color:var(--mu); margin-top:10px;">Gestisci i tuoi eventi, calcola i margini e invia proposte professionali.</p>
                 </div>
             </section>
 
-            <!-- SECTION: MENU -->
-            <section id="s-menu" class="section">
-                <div id="menu-banner-container"></div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Catalogo Piatti</h2>
-                        <div style="display: flex; gap: 12px;">
-                            <button class="btn btn-outline" onclick="openModal('m-import-menu')">📥 IMPORTA CSV</button>
-                            <button class="btn btn-gold" onclick="openModal('m-dish')">+ NUOVO PIATTO</button>
+            <!-- SECTION: GESTIONE EVENTI (LISTA) -->
+            <section id="s-events" class="section active">
+                <div id="event-list-view">
+                    <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                        <input type="text" placeholder="🔍 Cerca evento o cliente..." style="width: 300px;">
+                        <select style="width: 150px;"><option>Tutti gli stati</option><option>Bozza</option><option>Confermato</option></select>
+                        <button class="btn btn-outline">📊 REPORT MULTIPLO</button>
+                    </div>
+                    <div id="events-container"></div>
+                </div>
+
+                <!-- SECTION: SCHEDA EVENTO (EDIT) -->
+                <div id="event-edit-view" style="display: none;">
+                    <div style="margin-bottom: 24px; display: flex; align-items: center; gap: 16px;">
+                        <button class="btn btn-outline" onclick="closeEventEdit()">← TORNA ALLA LISTA</button>
+                        <h2 id="edit-event-name" style="font-family: 'Syne';">Nuovo Evento</h2>
+                        <span class="badge" id="edit-event-badge">BOZZA</span>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab-link active" onclick="showTab(0)">1. Info Evento</div>
+                        <div class="tab-link" onclick="showTab(1)">2. Organizzatore</div>
+                        <div class="tab-link" onclick="showTab(2)">3. Menu & Add-on</div>
+                        <div class="tab-link" onclick="showTab(3)">4. Costi & Margini</div>
+                        <div class="tab-link" onclick="showTab(4)">5. Note & Allegati</div>
+                        <div class="tab-link" onclick="showTab(5)">6. Comunicazioni</div>
+                    </div>
+
+                    <div class="card">
+                        <!-- Tab 1: Info -->
+                        <div class="tab-content active">
+                            <div class="form-row">
+                                <div class="form-group"><label>Nome Evento *</label><input type="text" id="ev-nome"></div>
+                                <div class="form-group"><label>Tipo Evento</label><select id="ev-tipo"><option value="corporate">Corporate</option><option value="wedding">Wedding</option><option value="birthday">Birthday</option></select></div>
+                            </div>
+                            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+                                <div class="form-group"><label>Data</label><input type="date" id="ev-data"></div>
+                                <div class="form-group"><label>Ora Inizio</label><input type="time" id="ev-ora-i"></div>
+                                <div class="form-group"><label>Ora Fine</label><input type="time" id="ev-ora-f"></div>
+                            </div>
+                            <h3 class="card-title" style="margin: 24px 0 16px;">Location</h3>
+                            <div class="form-row">
+                                <div class="form-group"><label>Nome Sala</label><input type="text" id="ev-loc-nome"></div>
+                                <div class="form-group"><label>Affitto Sala (€)</label><input type="number" id="ev-loc-affitto" oninput="updateCalculations()"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Organizzatore -->
+                        <div class="tab-content">
+                            <div class="form-row">
+                                <div class="form-group"><label>Nome e Cognome *</label><input type="text" id="ev-cl-nome"></div>
+                                <div class="form-group"><label>Azienda</label><input type="text" id="ev-cl-azienda"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Email</label><input type="email" id="ev-cl-email"></div>
+                                <div class="form-group"><label>Telefono</label><input type="text" id="ev-cl-tel"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Menu & Add-ons -->
+                        <div class="tab-content">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                                <h3 class="card-title">Partecipanti & Menu</h3>
+                                <button class="btn btn-outline" onclick="addParticipantTier()">+ AGGIUNGI FASCIA</button>
+                            </div>
+                            <div id="tiers-container" style="margin-bottom: 24px;"></div>
+                            
+                            <h3 class="card-title" style="margin-bottom: 16px;">Voci Menu Concordate</h3>
+                            <div style="margin-bottom: 16px; display: flex; gap: 8px;">
+                                <input type="text" id="menu-search" placeholder="🔍 Cerca nel catalogo..." style="flex:1;">
+                                <button class="btn btn-gold" onclick="addDishToEvent()">AGGIUNGI</button>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>Piatto</th><th>Quantità</th><th>Prezzo</th><th>Costo (Merce)</th><th>Margine</th><th>Azioni</th></tr></thead>
+                                    <tbody id="ev-menu-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab 4: Costi & Margini -->
+                        <div class="tab-content">
+                            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px;">
+                                <div>
+                                    <h3 class="card-title" style="margin-bottom: 20px;">Riepilogo Economico</h3>
+                                    <div id="summary-rows"></div>
+                                    <button class="btn btn-outline" style="margin-top: 20px;" onclick="addExtraCost()">+ AGGIUNGI COSTO EXTRA</button>
+                                </div>
+                                <div style="background: var(--s1); padding: 24px; border-radius: 12px;">
+                                    <h3 class="card-title">Analisi Margine</h3>
+                                    <div style="font-size: 32px; font-weight: 700; margin: 16px 0;" id="sum-marg-pct">0%</div>
+                                    <div class="analysis-bar"><div class="analysis-fill" id="marg-fill"></div></div>
+                                    <p id="marg-advice" style="font-size: 12px; color: var(--mu);"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 6: Comunicazioni -->
+                        <div class="tab-content">
+                            <h3 class="card-title" style="margin-bottom: 24px;">Strumenti di Invio</h3>
+                            <div style="display: flex; gap: 16px;">
+                                <button class="btn btn-gold" onclick="sendEmail('conferma')">📧 INVIA CONFERMA</button>
+                                <button class="btn btn-outline" onclick="generateReport()">📄 GENERA REPORT</button>
+                                <button class="btn btn-outline">📱 WHATSAPP</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 32px; border-top: 1px solid var(--bd); padding-top: 24px; display: flex; justify-content: flex-end; gap: 12px;">
+                            <button class="btn btn-outline" onclick="closeEventEdit()">ANNULLA</button>
+                            <button class="btn btn-gold" onclick="saveEvent()">SALVA EVENTO</button>
                         </div>
                     </div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr><th>Piatto</th><th>Categoria</th><th>Prezzo</th><th>Costo Merce</th><th>Margine %</th><th>Allergeni</th><th>Azioni</th></tr>
-                            </thead>
-                            <tbody id="menu-tbody"></tbody>
-                        </table>
-                    </div>
                 </div>
+            </section>
+
+            <!-- SECTION: MENU (Reuse previous v3 logic) -->
+            <section id="s-menu" class="section">
+                <div class="card"><h2>Libreria Menu</h2><p>Vedi versione v3.0 per dettagli...</p></div>
             </section>
 
             <!-- SECTION: INGREDIENTS -->
             <section id="s-ingredients" class="section">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Anagrafica Ingredienti</h2>
-                        <div style="display: flex; gap: 12px;">
-                            <button class="btn btn-outline" onclick="openModal('m-import-ing')">📥 IMPORTA CSV</button>
-                            <button class="btn btn-gold" onclick="openModal('m-ing')">+ NUOVO INGREDIENTE</button>
-                        </div>
-                    </div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr><th>Ingrediente</th><th>UM</th><th>Costo Unit.</th><th>Costo Riferimento</th><th>Categoria</th><th>Usato in</th><th>Azioni</th></tr>
-                            </thead>
-                            <tbody id="ing-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card">
-                    <h2 class="card-title" style="margin-bottom: 20px;">📊 STATO CALCOLO COSTI PIATTI</h2>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr><th>Piatto</th><th>Ing. Risolti</th><th>Mancanti</th><th>Costo Finale</th><th>Stato</th></tr>
-                            </thead>
-                            <tbody id="log-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- OTHER SECTIONS STUBS -->
-            <section id="s-events" class="section"><div class="card"><h2>Gestione Eventi</h2><p>Modulo in arrivo...</p></div></section>
-            <section id="s-clients" class="section"><div class="card"><h2>Clienti</h2><p>Database clienti...</p></div></section>
-            <section id="s-kpi" class="section"><div class="card"><h2>Margini & KPI</h2><p>Analisi avanzata...</p></div></section>
-            <section id="s-settings" class="section">
-                <div class="card">
-                    <h2>Impostazioni</h2>
-                    <div class="form-group" style="margin-top:20px;">
-                        <button class="btn btn-outline" style="color:var(--re); border-color:var(--re);" onclick="clearAllData()">⚠️ CANCELLA TUTTI I DATI</button>
-                    </div>
-                </div>
+                <div class="card"><h2>Ingredienti</h2><p>Vedi versione v3.0 per dettagli...</p></div>
             </section>
 
         </div>
     </main>
 
-    <!-- SIDE PANEL: DISH DETAIL -->
-    <div class="side-panel" id="p-dish-detail">
-        <button onclick="closePanel()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--mu); cursor: pointer; font-size: 24px;">✕</button>
-        <div id="p-content"></div>
-    </div>
-
-    <!-- MODAL: IMPORT MENU -->
-    <div class="modal-overlay" id="m-import-menu">
-        <div class="modal">
-            <h2 class="card-title" style="margin-bottom: 20px;">Importa Menu da CSV</h2>
-            <div class="drop-zone" onclick="document.getElementById('f-menu').click()">Trascina CSV o clicca qui<input type="file" id="f-menu" hidden onchange="handleFile(this, 'menu')"></div>
-            <div id="prev-menu" style="display:none; margin-top: 20px;">
-                <label>Anteprima:</label>
-                <div class="table-wrap" style="max-height: 150px;"><table id="t-prev-menu" style="font-size:10px;"></table></div>
-                <button class="btn btn-gold" style="width:100%; margin-top:20px;" onclick="confirmImport('menu')">IMPORTA PIATTI</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: IMPORT ING -->
-    <div class="modal-overlay" id="m-import-ing">
-        <div class="modal">
-            <h2 class="card-title" style="margin-bottom: 20px;">Importa Ingredienti da CSV</h2>
-            <div class="drop-zone" onclick="document.getElementById('f-ing').click()">Trascina CSV o clicca qui<input type="file" id="f-ing" hidden onchange="handleFile(this, 'ing')"></div>
-            <div id="prev-ing" style="display:none; margin-top: 20px;">
-                <label>Anteprima:</label>
-                <div class="table-wrap" style="max-height: 150px;"><table id="t-prev-ing" style="font-size:10px;"></table></div>
-                <button class="btn btn-gold" style="width:100%; margin-top:20px;" onclick="confirmImport('ing')">IMPORTA INGREDIENTI</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: ADD INGREDIENT -->
-    <div class="modal-overlay" id="m-ing">
-        <div class="modal">
-            <h2 class="card-title" style="margin-bottom: 24px;">Nuovo Ingrediente</h2>
-            <div class="form-group"><label>Nome *</label><input type="text" id="i-nome"></div>
-            <div style="display: flex; gap: 16px;">
-                <div class="form-group" style="flex:1;"><label>Unità Misura *</label><select id="i-um"><option value="g">g</option><option value="kg">kg</option><option value="pz">pz</option><option value="ml">ml</option><option value="l">l</option></select></div>
-                <div class="form-group" style="flex:1;"><label>Costo/Unità (€) *</label><input type="number" step="0.0001" id="i-cost" oninput="updateRefCost()"></div>
-            </div>
-            <p id="i-ref-text" style="font-size: 11px; color: var(--acc); margin-bottom: 20px;">Equivale a: € 0,00 per 1kg / 100pz</p>
-            <div class="form-group"><label>Categoria</label><input type="text" id="i-cat" placeholder="es. Carni"></div>
-            <div class="form-group"><label>Fornitore</label><input type="text" id="i-forn"></div>
-            <div style="display: flex; gap: 12px;"><button class="btn btn-gold" style="flex:1;" onclick="saveIng()">SALVA</button><button class="btn btn-outline" onclick="closeModal('m-ing')">ANNULLA</button></div>
-        </div>
-    </div>
+    <!-- PRINT REPORT CONTAINER -->
+    <div id="report-print"></div>
 
     <div id="toast-container"></div>
 
     <script>
-        // --- APP STATE & PERSISTENCE ---
-        let AppState = JSON.parse(localStorage.getItem('antigravity_v3_state')) || {
-            ingredients: [],
+        // --- APP STATE ---
+        let AppState = JSON.parse(localStorage.getItem('antigravity_v4_state')) || {
+            events: [],
             menuItems: [],
-            events: []
+            ingredients: []
         };
 
-        const save = () => {
-            localStorage.setItem('antigravity_v3_state', JSON.stringify(AppState));
-        };
+        let currentEvent = null;
 
-        // --- UTILS ---
+        const save = () => { localStorage.setItem('antigravity_v4_state', JSON.stringify(AppState)); updateSidebar(); };
+        const notify = (m) => { const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; $('toast-container').appendChild(t); setTimeout(()=>t.remove(), 3000); };
         const $ = id => document.getElementById(id);
-        const openModal = id => $(id).style.display = 'flex';
-        const closeModal = id => $(id).style.display = 'none';
-        const notify = (m, t='gold') => {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = m;
-            $('toast-container').appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        };
 
         function nav(id, el) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             $('s-' + id).classList.add('active');
             el.classList.add('active');
-            $('page-title').textContent = el.textContent.trim();
-            if (id === 'menu') renderMenu();
-            if (id === 'ingredients') renderIngredients();
-            if (id === 'dashboard') updateDashboard();
+            if (id === 'events') renderEventList();
         }
 
-        // --- ENGINE: CALCULATIONS ---
-        function parseIngredients(raw) {
-            return raw.split('|').map(p => {
-                p = p.trim();
-                const regex = /^(.+?)\s+([\d]+(?:[,.][\d]+)?)\s*(g|gr|kg|pz|ml|l|cl|fette?|porzioni?)?(?:\s.*)?$/i;
-                const m = p.match(regex);
-                if (m) return { nome: m[1].trim(), qty: parseFloat(m[2].replace(',', '.')), um: (m[3] || 'pz').toLowerCase().replace('gr','g') };
-                return { nome: p, qty: 1, um: 'pz' };
-            });
-        }
-
-        function findIngredient(needle, list) {
-            needle = needle.toLowerCase().trim();
-            let f = list.find(i => i.nome.toLowerCase() === needle);
-            if (!f) f = list.find(i => needle.includes(i.nome.toLowerCase()));
-            if (!f) f = list.find(i => i.nome.toLowerCase().includes(needle));
-            if (!f) {
-                const nw = needle.split(' ').filter(w => w.length > 3);
-                f = list.find(i => {
-                    const iw = i.nome.toLowerCase().split(' ').filter(w => w.length > 3);
-                    return nw.filter(w => iw.includes(w)).length >= 2;
-                });
-            }
-            return f;
-        }
-
-        function normalizeQty(q, u_rec, u_ing) {
-            const conv = { 'kg_to_g': 1000, 'g_to_kg': 0.001, 'l_to_ml': 1000, 'ml_to_l': 0.001, 'cl_to_ml': 10, 'ml_to_cl': 0.1 };
-            return q * (conv[`${u_rec}_to_${u_ing}`] || 1);
-        }
-
-        function calculateDish(dish, ingredients) {
-            const recipe = parseIngredients(dish.ingredienti_raw);
-            let cost = 0, solved = 0, missing = [], breakdown = [];
-            recipe.forEach(ri => {
-                const found = findIngredient(ri.nome, ingredients);
-                if (found) {
-                    const qn = normalizeQty(ri.qty, ri.um, found.um);
-                    const lineCost = found.costo_per_unita * qn;
-                    cost += lineCost; solved++;
-                    breakdown.push({ nome: ri.nome, qty: ri.qty, um: ri.um, u_cost: found.costo_per_unita, line: lineCost, status: 'ok' });
-                } else {
-                    missing.push(ri.nome);
-                    breakdown.push({ nome: ri.nome, qty: ri.qty, um: ri.um, status: 'missing' });
-                }
-            });
-            return { cost, solved, total: recipe.length, missing, breakdown, status: missing.length === 0 ? 'completo' : (solved > 0 ? 'parziale' : 'error') };
-        }
-
-        function cascade() {
-            AppState.menuItems.forEach(dish => {
-                const res = calculateDish(dish, AppState.ingredients);
-                dish.costo_calcolato = res.cost;
-                dish.margine_pct = dish.prezzo_vendita > 0 ? ((dish.prezzo_vendita - res.cost) / dish.prezzo_vendita * 100) : 0;
-                dish.stato_calcolo = res.status;
-                dish.ingredienti_risolti = res.solved;
-                dish.ingredienti_totali = res.total;
-                dish.ingredienti_mancanti = res.missing;
-            });
-            save();
-            renderMenu();
-            renderIngredients();
-            updateDashboard();
-        }
-
-        // --- UI: RENDERING ---
-        function renderMenu() {
-            const tbody = $('menu-tbody');
-            tbody.innerHTML = '';
-            
-            // Check missing banner
-            const missingCount = AppState.menuItems.filter(d => d.stato_calcolo !== 'completo').length;
-            const banner = $('menu-banner-container');
-            banner.innerHTML = missingCount > 0 ? `
-                <div class="missing-banner">
-                    <div>⚠️ <strong>${missingCount} piatti</strong> hanno ingredienti non risolti nell'anagrafica.</div>
-                    <button class="btn btn-gold" onclick="nav('ingredients', document.querySelectorAll('.nav-link')[3])">GESTISCI INGREDIENTI</button>
-                </div>
-            ` : '';
-
-            AppState.menuItems.forEach(d => {
-                const mClass = d.margine_pct >= 60 ? 'badge-green' : (d.margine_pct >= 40 ? 'badge-amber' : 'badge-red');
-                const cClass = d.stato_calcolo === 'completo' ? 'badge-green' : (d.stato_calcolo === 'parziale' ? 'badge-amber' : 'badge-gray');
-                tbody.innerHTML += `
-                    <tr onclick="showDishDetail('${d.id}')" style="cursor:pointer">
-                        <td style="font-weight:700">${d.nome}</td>
-                        <td><span class="badge" style="background:var(--s3)">${d.categoria}</span></td>
-                        <td class="mono">€ ${d.prezzo_vendita.toFixed(2)}</td>
-                        <td class="mono"><span class="badge ${cClass}">€ ${d.costo_calcolato.toFixed(2)}</span></td>
-                        <td><span class="badge ${mClass}">${d.margine_pct.toFixed(0)}%</span></td>
-                        <td>${d.allergeni.map(a => `<span class="badge" style="background:var(--acc-dim); color:var(--acc); font-size:9px; margin:1px;">${a}</span>`).join('')}</td>
-                        <td><button class="btn btn-outline" style="padding:4px 8px;" onclick="event.stopPropagation(); deleteDish('${d.id}')">✕</button></td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderIngredients() {
-            const tbody = $('ing-tbody');
-            const logBody = $('log-tbody');
-            tbody.innerHTML = '';
-            logBody.innerHTML = '';
-
-            AppState.ingredients.forEach(i => {
-                const refCost = i.um === 'g' || i.um === 'ml' ? i.costo_per_unita * 1000 : i.costo_per_unita * 100;
-                const refText = i.um === 'g' || i.um === 'ml' ? 'per kg' : 'per 100pz';
-                const usage = AppState.menuItems.filter(d => d.ingredienti_raw.toLowerCase().includes(i.nome.toLowerCase())).length;
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight:700">${i.nome}</td>
-                        <td>${i.um}</td>
-                        <td class="mono">€ ${i.costo_per_unita.toFixed(4)}</td>
-                        <td class="mono" style="color:var(--acc)">€ ${refCost.toFixed(2)} <small>${refText}</small></td>
-                        <td><span class="badge" style="background:var(--s3)">${i.categoria}</span></td>
-                        <td class="mono">${usage}</td>
-                        <td><button class="btn btn-outline" style="padding:4px 8px;" onclick="deleteIng('${i.id}')">✕</button></td>
-                    </tr>
-                `;
-            });
-
-            AppState.menuItems.forEach(d => {
-                const sBadge = d.stato_calcolo === 'completo' ? 'badge-green' : (d.stato_calcolo === 'parziale' ? 'badge-amber' : 'badge-red');
-                logBody.innerHTML += `
-                    <tr>
-                        <td>${d.nome}</td>
-                        <td class="mono">${d.ingredienti_risolti}/${d.ingredienti_totali}</td>
-                        <td style="color:var(--re); font-size:11px;">${d.ingredienti_mancanti.join(', ')}</td>
-                        <td class="mono">€ ${d.costo_calcolato.toFixed(2)}</td>
-                        <td><span class="badge ${sBadge}">${d.stato_calcolo}</span></td>
-                    </tr>
-                `;
-            });
-        }
-
-        function updateDashboard() {
-            const totalRev = AppState.menuItems.reduce((s,d) => s + d.prezzo_vendita, 0);
-            const avgMarg = AppState.menuItems.length > 0 ? 
-                AppState.menuItems.reduce((s,d) => s + d.margine_pct, 0) / AppState.menuItems.length : 0;
-            
-            $('kpi-rev').textContent = '€ ' + totalRev.toLocaleString('it-IT');
-            $('kpi-marg').textContent = avgMarg.toFixed(1) + '%';
-            $('kpi-dishes').textContent = AppState.menuItems.length;
-        }
-
-        // --- SIDE PANEL: DETAIL ---
-        function showDishDetail(id) {
-            const dish = AppState.menuItems.find(d => d.id === id);
-            const res = calculateDish(dish, AppState.ingredients);
-            
-            let html = `
-                <h2 style="font-family:'Syne'; margin-bottom:8px;">${dish.nome}</h2>
-                <div class="badge" style="background:var(--s3); margin-bottom:32px;">${dish.categoria}</div>
-                
-                <h3 style="font-size:12px; color:var(--mu); text-transform:uppercase; margin-bottom:16px;">Distinta Base</h3>
-                <div style="border-top:1px solid var(--bd);">
-            `;
-            
-            res.breakdown.forEach(b => {
-                const isErr = b.status === 'missing';
-                html += `
-                    <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--bd); ${isErr?'opacity:0.5; color:var(--re);':''}">
-                        <div>
-                            <div style="font-size:14px; font-weight:700;">${isErr?'❌ ':''}${b.nome}</div>
-                            <div style="font-size:11px; color:var(--mu);">${b.qty} ${b.um} ${!isErr?`× €${b.u_cost.toFixed(4)}`:''}</div>
+        // --- EVENT LIST LOGIC ---
+        function renderEventList() {
+            const container = $('events-container');
+            container.innerHTML = '';
+            AppState.events.forEach(ev => {
+                const marg = calculateEventSummary(ev).margine_pct;
+                const mClass = marg >= 60 ? 'badge-green' : (marg >= 40 ? 'badge-amber' : 'badge-red');
+                container.innerHTML += `
+                    <div class="evt-card">
+                        <div class="evt-grid">
+                            <div>
+                                <div class="evt-title">${ev.nome_evento}</div>
+                                <div class="evt-meta">
+                                    <span>📅 ${ev.data_evento}</span>
+                                    <span>👥 ${ev.partecipanti.confermati} pax</span>
+                                    <span>📍 ${ev.location.nome}</span>
+                                </div>
+                            </div>
+                            <div class="mono">
+                                <div style="font-size:11px; color:var(--mu)">RICAVO PREVISTO</div>
+                                <div style="font-weight:700">€ ${ev.riepilogo.ricavo_totale.toFixed(0)}</div>
+                            </div>
+                            <div class="evt-actions">
+                                <span class="badge ${mClass}">${marg.toFixed(0)}%</span>
+                                <button class="btn btn-outline" style="padding:6px 12px" onclick="editEvent('${ev.id}')">APRI</button>
+                                <button class="btn btn-outline" style="padding:6px 12px" onclick="duplicateEvent('${ev.id}')">❐</button>
+                                <button class="btn btn-outline" style="padding:6px 12px; color:var(--re)" onclick="deleteEvent('${ev.id}')">✕</button>
+                            </div>
                         </div>
-                        <div class="mono">${!isErr?`€ ${b.line.toFixed(2)}`:'--'}</div>
                     </div>
                 `;
             });
+            updateSidebar();
+        }
 
-            html += `
+        function updateSidebar() {
+            $('badge-events').textContent = AppState.events.length;
+        }
+
+        // --- EDIT EVENT LOGIC ---
+        function openNewEvent() {
+            currentEvent = {
+                id: 'evt_' + Date.now(),
+                codice: 'DM-2026-' + (AppState.events.length + 1).toString().padStart(3, '0'),
+                stato: 'bozza',
+                nome_evento: 'Nuovo Evento',
+                location: { nome: '', affitto: 0 },
+                organizzatore: { nome: '', azienda: '', email: '' },
+                partecipanti: { confermati: 0, fasce: [{ nome: 'Adulti', num: 0, prezzo_persona: 0 }] },
+                menu_voci: [],
+                costi_extra: [],
+                riepilogo: { ricavo_totale: 0, costo_totale: 0 }
+            };
+            showEventEdit();
+        }
+
+        function editEvent(id) {
+            currentEvent = JSON.parse(JSON.stringify(AppState.events.find(e => e.id === id)));
+            showEventEdit();
+        }
+
+        function showEventEdit() {
+            $('event-list-view').style.display = 'none';
+            $('event-edit-view').style.display = 'block';
+            fillEventForm();
+            updateCalculations();
+        }
+
+        function closeEventEdit() {
+            $('event-list-view').style.display = 'block';
+            $('event-edit-view').style.display = 'none';
+            renderEventList();
+        }
+
+        function fillEventForm() {
+            $('ev-nome').value = currentEvent.nome_evento;
+            $('ev-data').value = currentEvent.data_evento || '';
+            $('ev-loc-nome').value = currentEvent.location.nome;
+            $('ev-loc-affitto').value = currentEvent.location.affitto;
+            $('ev-cl-nome').value = currentEvent.organizzatore.nome;
+            $('ev-cl-email').value = currentEvent.organizzatore.email;
+            renderMenuTable();
+        }
+
+        function showTab(idx) {
+            document.querySelectorAll('.tab-link').forEach((l, i) => l.classList.toggle('active', i === idx));
+            document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === idx));
+        }
+
+        // --- CALCULATIONS ---
+        function updateCalculations() {
+            // Update currentEvent from inputs
+            currentEvent.nome_evento = $('ev-nome').value;
+            currentEvent.location.affitto = parseFloat($('ev-loc-affitto').value) || 0;
+            
+            const res = calculateEventSummary(currentEvent);
+            currentEvent.riepilogo = res;
+
+            $('sum-marg-pct').textContent = res.margine_pct.toFixed(1) + '%';
+            $('marg-fill').style.width = res.margine_pct + '%';
+            $('marg-fill').style.background = res.margine_pct >= 60 ? 'var(--gr)' : (res.margine_pct >= 40 ? 'var(--am)' : 'var(--re)');
+            
+            // Render summary rows
+            $('summary-rows').innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Ricavo Totale</span><span class="mono">€ ${res.ricavo_totale.toFixed(2)}</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:var(--re);"><span>Costo Totale</span><span class="mono">€ ${res.costo_totale.toFixed(2)}</span></div>
+                <div style="display:flex; justify-content:space-between; margin-top:20px; font-weight:700; border-top:1px solid var(--bd); padding-top:10px;"><span>Margine Lordo</span><span class="mono">€ ${res.margine_lordo.toFixed(2)}</span></div>
+            `;
+        }
+
+        function calculateEventSummary(ev) {
+            let ricavo = 0;
+            let costo = 0;
+            
+            // Menu
+            ev.menu_voci.forEach(m => {
+                ricavo += m.quantita * m.prezzo_unitario;
+                costo += m.quantita * m.costo_unitario;
+            });
+
+            // Location
+            costo += ev.location.affitto;
+
+            // Extra
+            ev.costi_extra.forEach(ex => { if(ex.tipo === 'costo') costo += ex.importo; });
+
+            const ml = ricavo - costo;
+            const pct = ricavo > 0 ? (ml / ricavo * 100) : 0;
+
+            return { ricavo_totale: ricavo, costo_totale: costo, margine_lordo: ml, margine_pct: pct };
+        }
+
+        function renderMenuTable() {
+            const tbody = $('ev-menu-tbody');
+            tbody.innerHTML = '';
+            currentEvent.menu_voci.forEach((m, i) => {
+                const mPct = ((m.prezzo_unitario - m.costo_unitario) / m.prezzo_unitario * 100);
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${m.nome}</td>
+                        <td><input type="number" value="${m.quantita}" style="width:60px; padding:4px" onchange="updateMenuQty(${i}, this.value)"></td>
+                        <td class="mono">€ ${m.prezzo_unitario.toFixed(2)}</td>
+                        <td class="mono">€ ${m.costo_unitario.toFixed(2)}</td>
+                        <td><span class="badge ${mPct >= 60 ? 'badge-green' : 'badge-amber'}">${mPct.toFixed(0)}%</span></td>
+                        <td><button class="btn btn-outline" style="padding:4px 8px" onclick="removeMenuVoce(${i})">✕</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addDishToEvent() {
+            // For demo: adds first menu item found
+            const dish = AppState.menuItems[0] || { nome: 'Piatto Test', prezzo: 10, costo: 4 };
+            currentEvent.menu_voci.push({
+                nome: dish.nome,
+                quantita: 10,
+                prezzo_unitario: dish.prezzo || 10,
+                costo_unitario: dish.costo || 4
+            });
+            renderMenuTable();
+            updateCalculations();
+        }
+
+        function saveEvent() {
+            const idx = AppState.events.findIndex(e => e.id === currentEvent.id);
+            if (idx > -1) AppState.events[idx] = currentEvent;
+            else AppState.events.push(currentEvent);
+            save();
+            notify("Evento salvato con successo!");
+            closeEventEdit();
+        }
+
+        function deleteEvent(id) { if(confirm("Eliminare l'evento?")) { AppState.events = AppState.events.filter(e => e.id !== id); save(); renderEventList(); } }
+
+        function duplicateEvent(id) {
+            const ev = JSON.parse(JSON.stringify(AppState.events.find(e => e.id === id)));
+            ev.id = 'evt_' + Date.now();
+            ev.codice = 'DM-2026-' + (AppState.events.length + 1).toString().padStart(3, '0');
+            ev.stato = 'bozza';
+            ev.data_evento = '';
+            AppState.events.push(ev);
+            save();
+            renderEventList();
+            notify("Evento duplicato");
+        }
+
+        // --- REPORT & EMAIL ---
+        function generateReport() {
+            const ev = currentEvent;
+            const html = `
+                <div style="text-align:center; margin-bottom:40px;">
+                    <h1 style="font-size:28px;">DOPPIO MALTO</h1>
+                    <p>Birrificio e Cucina — Report Evento</p>
                 </div>
-                <div style="margin-top:32px; background:var(--s1); padding:20px; border-radius:12px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Costo Totale:</span><span class="mono">€ ${res.cost.toFixed(2)}</span></div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Prezzo Vendita:</span><span class="mono">€ ${dish.prezzo_vendita.toFixed(2)}</span></div>
-                    <div style="display:flex; justify-content:space-between; padding-top:12px; border-top:1px solid var(--bd); font-weight:700;">
-                        <span>Margine Lordo:</span>
-                        <span style="color:${dish.margine_pct>=60?'var(--gr)':(dish.margine_pct>=40?'var(--am)':'var(--re)')}">€ ${(dish.prezzo_vendita - res.cost).toFixed(2)} (${dish.margine_pct.toFixed(1)}%)</span>
-                    </div>
+                <h2 style="border-bottom:2px solid #000; padding-bottom:10px;">${ev.nome_evento} (${ev.codice})</h2>
+                <div style="display:grid; grid-template-columns:1fr 1fr; margin:20px 0;">
+                    <div><strong>Data:</strong> ${ev.data_evento}</div>
+                    <div><strong>Cliente:</strong> ${ev.organizzatore.nome}</div>
+                </div>
+                <table style="width:100%; border-collapse:collapse; margin-top:20px;">
+                    <thead><tr style="background:#f0f0f0;"><th>Piatto</th><th>Qty</th><th>Prezzo</th><th>Totale</th></tr></thead>
+                    <tbody>
+                        ${ev.menu_voci.map(m => `<tr><td>${m.nome}</td><td>${m.quantita}</td><td>€ ${m.prezzo_unitario.toFixed(2)}</td><td>€ ${(m.quantita * m.prezzo_unitario).toFixed(2)}</td></tr>`).join('')}
+                    </tbody>
+                </table>
+                <div style="text-align:right; margin-top:30px; font-size:18px; font-weight:700;">
+                    TOTALE PREVENTIVO: € ${ev.riepilogo.ricavo_totale.toFixed(2)}
                 </div>
             `;
-
-            $('p-content').innerHTML = html;
-            $('p-dish-detail').classList.add('open');
+            $('report-print').innerHTML = html;
+            window.print();
         }
 
-        function closePanel() { $('p-dish-detail').classList.remove('open'); }
-
-        // --- ACTIONS ---
-        function updateRefCost() {
-            const c = parseFloat($('i-cost').value) || 0;
-            const um = $('i-um').value;
-            const ref = (um === 'g' || um === 'ml') ? c * 1000 : c * 100;
-            const text = (um === 'g' || um === 'ml') ? 'per kg' : 'per 100pz';
-            $('i-ref-text').textContent = `Equivale a: € ${ref.toFixed(2)} ${text}`;
-        }
-
-        function saveIng() {
-            const n = $('i-nome').value, u = $('i-um').value, c = parseFloat($('i-cost').value);
-            if (!n || isNaN(c)) return notify("Campi obbligatori mancanti", "re");
-            AppState.ingredients.push({ id: 'ing_'+Date.now(), nome: n, um: u, costo_per_unita: c, categoria: $('i-cat').value || 'Varie', fornitore: $('i-forn').value });
-            cascade();
-            closeModal('m-ing');
-            notify("Ingrediente salvato");
-        }
-
-        function deleteIng(id) { AppState.ingredients = AppState.ingredients.filter(i => i.id !== id); cascade(); }
-        function deleteDish(id) { AppState.menuItems = AppState.menuItems.filter(d => d.id !== id); cascade(); }
-
-        // --- IMPORT CSV ---
-        let tempRows = [];
-        function handleFile(input, type) {
-            const f = input.files[0];
-            const reader = new FileReader();
-            reader.onload = e => {
-                const text = e.target.result;
-                const lines = text.split(/\r?\n/).filter(l => l.trim());
-                const sep = lines[0].includes(';') ? ';' : ',';
-                tempRows = lines.map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, '')));
-                $(`t-prev-${type}`).innerHTML = tempRows.slice(0, 5).map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
-                $(`prev-${type}`).style.display = 'block';
-            };
-            reader.readAsText(f);
-        }
-
-        function confirmImport(type) {
-            const hdr = tempRows[0].map(h => h.toLowerCase());
-            if (type === 'menu') {
-                const m = { cat: hdr.indexOf('categoria'), nome: hdr.indexOf('nome_piatto'), ing: hdr.indexOf('ingredienti_grammature'), px: hdr.indexOf('prezzo_eur'), als: hdr.indexOf('allergeni') };
-                tempRows.slice(1).forEach(r => {
-                    AppState.menuItems.push({
-                        id: 'dish_'+Math.random().toString(36).substr(2,9),
-                        categoria: r[m.cat] || 'Varie', nome: r[m.nome], ingredienti_raw: r[m.ing] || '',
-                        prezzo_vendita: parseFloat((r[m.px] || '0').replace(',', '.')) || 0,
-                        allergeni: (r[m.als] || '').split(',').map(s => s.trim()).filter(Boolean)
-                    });
-                });
-            } else {
-                const m = { nome: hdr.indexOf('nome_ingrediente'), um: hdr.indexOf('unita_misura'), cost: hdr.indexOf('costo_per_unita_eur'), cat: hdr.indexOf('categoria'), for: hdr.indexOf('fornitore') };
-                tempRows.slice(1).forEach(r => {
-                    AppState.ingredients.push({
-                        id: 'ing_'+Math.random().toString(36).substr(2,9),
-                        nome: r[m.nome], um: (r[m.um] || 'pz').toLowerCase(),
-                        costo_per_unita: parseFloat((r[m.cost] || '0').replace(',', '.')) || 0,
-                        categoria: r[m.cat] || 'Varie', fornitore: r[m.for] || ''
-                    });
-                });
-            }
-            cascade();
-            closeModal(`m-import-${type}`);
-            notify(`Importazione ${type} completata`);
+        function sendEmail(type) {
+            const ev = currentEvent;
+            const subject = `Conferma Evento: ${ev.nome_evento} - ${ev.data_evento}`;
+            const body = `Gentile ${ev.organizzatore.nome},\n\nsiamo lieti di confermare la tua prenotazione per il ${ev.data_evento}.\n\nTotale previsto: € ${ev.riepilogo.ricavo_totale.toFixed(2)}\n\nCordiali saluti,\nTeam Antigravity`;
+            window.location.href = `mailto:${ev.organizzatore.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
 
         // --- DEMO DATA ---
-        function loadDemoData() {
-            AppState.ingredients = [
-                { id: "ing_1", nome: "Bun burger", um: "pz", costo_per_unita: 0.45, categoria: "Panificati", fornitore: "Panificio Nord" },
-                { id: "ing_2", nome: "Burger grande", um: "pz", costo_per_unita: 1.80, categoria: "Carni", fornitore: "Macelleria DM" },
-                { id: "ing_3", nome: "Provola a fette", um: "g", costo_per_unita: 0.018, categoria: "Formaggi", fornitore: "Caseificio Sud" },
-                { id: "ing_4", nome: "Bacon", um: "g", costo_per_unita: 0.022, categoria: "Salumi", fornitore: "Salumificio Est" },
-                { id: "ing_5", nome: "Patatine fritte", um: "g", costo_per_unita: 0.004, categoria: "Verdure", fornitore: "Fresco Orto" },
-                { id: "ing_6", nome: "Maionese alla birra", um: "g", costo_per_unita: 0.008, categoria: "Salse", fornitore: "Produzione Interna" },
-                { id: "ing_7", nome: "Salsa burger alla birra", um: "g", costo_per_unita: 0.006, categoria: "Salse", fornitore: "Produzione Interna" },
-                { id: "ing_8", nome: "Salsa di pomodoro", um: "g", costo_per_unita: 0.003, categoria: "Salse", fornitore: "Conserve Italia" },
-                { id: "ing_9", nome: "Mozzarella julienne", um: "g", costo_per_unita: 0.012, categoria: "Formaggi", fornitore: "Caseificio Sud" },
-                { id: "ing_10", nome: "Base pizza", um: "pz", costo_per_unita: 0.95, categoria: "Panificati", fornitore: "Pastificio DM" },
-                { id: "ing_11", nome: "Olio oliva", um: "g", costo_per_unita: 0.009, categoria: "Condimenti", fornitore: "Oleificio Puglia" },
-                { id: "ing_12", nome: "Scamone", um: "g", costo_per_unita: 0.038, categoria: "Carni", fornitore: "Macelleria DM" },
-                { id: "ing_13", nome: "Rucola", um: "g", costo_per_unita: 0.006, categoria: "Verdure", fornitore: "Fresco Orto" },
-                { id: "ing_14", nome: "Sale Maldon", um: "g", costo_per_unita: 0.015, categoria: "Condimenti", fornitore: "Import UK" },
-                { id: "ing_15", nome: "Tagliatelle", um: "g", costo_per_unita: 0.005, categoria: "Pasta", fornitore: "Pastificio DM" },
-                { id: "ing_16", nome: "Ragu' alla bolognese", um: "g", costo_per_unita: 0.018, categoria: "Salse", fornitore: "Produzione Interna" },
-                { id: "ing_17", nome: "Gnocchi di patate", um: "g", costo_per_unita: 0.006, categoria: "Pasta", fornitore: "Pastificio DM" },
-                { id: "ing_18", nome: "Mousse Bella Lodi", um: "g", costo_per_unita: 0.022, categoria: "Formaggi", fornitore: "Caseificio Sud" },
-                { id: "ing_19", nome: "Birramisu'", um: "pz", costo_per_unita: 1.20, categoria: "Dessert", fornitore: "Produzione Interna" },
-                { id: "ing_20", nome: "Cheesecake", um: "pz", costo_per_unita: 1.80, categoria: "Dessert", fornitore: "Produzione Interna" },
-                { id: "ing_21", nome: "Nutella", um: "g", costo_per_unita: 0.010, categoria: "Condimenti", fornitore: "Ferrero" },
-                { id: "ing_22", nome: "Gelato fior di panna", um: "g", costo_per_unita: 0.014, categoria: "Dessert", fornitore: "Produzione Interna" },
-                { id: "ing_23", nome: "Scaglie di cioccolato", um: "g", costo_per_unita: 0.025, categoria: "Pasticceria", fornitore: "Pasticceria DM" },
-                { id: "ing_24", nome: "Insalata gentile", um: "g", costo_per_unita: 0.004, categoria: "Verdure", fornitore: "Fresco Orto" },
-                { id: "ing_25", nome: "Patate a spicchio", um: "g", costo_per_unita: 0.004, categoria: "Verdure", fornitore: "Fresco Orto" },
-                { id: "ing_26", nome: "Burger smash", um: "pz", costo_per_unita: 0.90, categoria: "Carni", fornitore: "Macelleria DM" },
-            ];
-            AppState.menuItems = [
-                { id: "d1", categoria:"Burger", nome:"Provola e Bacon", ingredienti_raw:"Bun burger 1 pz | Salsa burger alla birra 40g | Burger grande 1 pz | Provola a fette 20g | Bacon 30g | Patatine fritte 150g | Maionese alla birra 25g | Insalata gentile 10g", allergeni:["Glutine","Uova","Latte","Senape"], prezzo_vendita:12.80 },
-                { id: "d2", categoria:"Pizza", nome:"Margherita", ingredienti_raw:"Base pizza 1 pz | Salsa di pomodoro 130g | Mozzarella julienne 100g | Olio oliva 5g", allergeni:["Glutine","Latte"], prezzo_vendita:7.80 },
-                { id: "d3", categoria:"Brace", nome:"Gran Tagliata", ingredienti_raw:"Scamone 200g | Olio oliva 5g | Rucola 10g | Maionese alla birra 25g | Sale Maldon 3g | Patate a spicchio 220g", allergeni:["Uova","Senape"], prezzo_vendita:16.60 },
-                { id: "d4", categoria:"Primo", nome:"Tagliatelle al Ragu'", ingredienti_raw:"Tagliatelle 150g | Ragu' alla bolognese 120g | Salsa di pomodoro 100g", allergeni:["Glutine","Uova","Latte"], prezzo_vendita:10.80 },
-                { id: "d5", categoria:"Dessert", nome:"Birramisu'", ingredienti_raw:"Birramisu' 1 pz | Scaglie di cioccolato 2g", allergeni:["Glutine","Uova","Latte"], prezzo_vendita:5.60 },
-                { id: "d6", categoria:"Contorno", nome:"Patate a Spicchio", ingredienti_raw:"Patate a spicchio 220g | Maionese alla birra 25g", allergeni:["Uova","Senape"], prezzo_vendita:4.40 },
-            ];
-            cascade();
-            notify("Dati demo caricati con successo");
+        function loadInitialDemo() {
+            if (AppState.events.length === 0) {
+                AppState.events = [
+                    { id:'e1', codice:'DM-2026-001', stato:'confermato', nome_evento:'Cena Aziendale Google Milan', data_evento:'2026-05-15', location:{nome:'Salone Reale', affitto:850}, organizzatore:{nome:'Marco Bianchi', email:'m.bianchi@google.com'}, partecipanti:{confermati:80}, menu_voci:[{nome:'Burger Provola', quantita:80, prezzo_unitario:12.8, costo_unitario:4.31}], costi_extra:[], riepilogo:{ricavo_totale:1024, costo_totale:1200} },
+                    { id:'e2', codice:'DM-2026-002', stato:'pending', nome_evento:'Matrimonio Bianchi', data_evento:'2026-05-22', location:{nome:'Villa Reale', affitto:1200}, organizzatore:{nome:'Chiara B.', email:'chiara@gmail.com'}, partecipanti:{confermati:120}, menu_voci:[{nome:'Menu Gold', quantita:120, prezzo_unitario:75, costo_unitario:25}], costi_extra:[], riepilogo:{ricavo_totale:9000, costo_totale:4200} }
+                ];
+                save();
+            }
         }
 
-        function clearAllData() { if (confirm("Sei sicuro di voler cancellare tutto?")) { AppState = { ingredients: [], menuItems: [], events: [] }; cascade(); } }
-
-        window.onload = cascade;
+        window.onload = () => { loadInitialDemo(); renderEventList(); };
     </script>
 </body>
 </html>
