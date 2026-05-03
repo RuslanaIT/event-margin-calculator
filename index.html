@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Event Margin Calculator — Doppio Malto</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d0f14;--s:#161a22;--s2:#1e2330;--s3:#252c3a;--bd:#2a3248;--acc:#6c8fff;--acc2:#a78bfa;--gr:#22c55e;--am:#f59e0b;--re:#ef4444;--tx:#e8eaf0;--mu:#7c859a}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:60px}
+h1{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header{background:var(--s);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;align-items:center;gap:10px}
+.logo{font-size:1rem;font-weight:600;color:var(--mu)}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 14px}
+/* metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.mc{background:var(--s);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.mc .lbl{font-size:.72rem;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.mc .val{font-size:1.5rem;font-weight:700}
+.mc .sub{font-size:.78rem;color:var(--mu);margin-top:3px}
+.mc.gr .val{color:var(--gr)}.mc.am .val{color:var(--am)}.mc.re .val{color:var(--re)}
+.bar-wrap{grid-column:1/-1;background:var(--s);border:1px solid var(--bd);border-radius:10px;padding:12px 16px}
+.bar-track{background:var(--s3);border-radius:999px;height:9px;overflow:hidden;margin-top:7px}
+.bar-fill{height:100%;border-radius:999px;transition:width .4s,background .4s}
+/* cards */
+.card{background:var(--s);border:1px solid var(--bd);border-radius:10px;padding:18px;margin-bottom:18px}
+.card h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:14px}
+/* inputs */
+input[type=text],input[type=number]{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:8px 11px;color:var(--tx);font-size:.9rem;outline:none;transition:border-color .2s;font-family:inherit}
+input:focus{border-color:var(--acc)}
+label{display:block;font-size:.72rem;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+select{background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:7px 10px;color:var(--tx);font-size:.85rem;outline:none;cursor:pointer;font-family:inherit}
+select:focus{border-color:var(--acc)}
+/* event grid */
+.ev-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+/* fasce */
+.fasce-grid{display:grid;grid-template-columns:1fr 120px 36px;gap:8px;align-items:center;margin-bottom:8px}
+.fasce-total{font-size:.85rem;color:var(--mu);margin-top:4px}
+.fasce-total strong{color:var(--acc2);font-size:1rem}
+/* tabs */
+.tabs{display:flex;gap:4px;margin-bottom:14px}
+.tab{padding:8px 18px;border-radius:7px;border:1px solid var(--bd);background:var(--s);color:var(--mu);font-size:.88rem;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit}
+.tab.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.tp{display:none}.tp.active{display:block}
+/* table */
+.tw{overflow-x:auto;border-radius:10px;border:1px solid var(--bd)}
+table{width:100%;border-collapse:collapse;background:var(--s)}
+thead th{background:var(--s2);padding:10px 11px;text-align:left;font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+tbody tr{border-top:1px solid var(--bd)}
+tbody tr:hover{background:var(--s2)}
+td{padding:8px 9px;font-size:.85rem;vertical-align:middle}
+td input[type=text],td input[type=number]{padding:5px 8px;font-size:.83rem}
+.del{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:var(--re);border-radius:5px;padding:3px 9px;cursor:pointer;font-size:.78rem;font-family:inherit}
+.del:hover{background:rgba(239,68,68,.25)}
+.add-btn{margin-top:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;color:#fff;border-radius:7px;padding:8px 18px;cursor:pointer;font-size:.85rem;font-weight:600;font-family:inherit}
+.add-btn:hover{opacity:.85}
+.sm-btn{background:var(--s2);border:1px solid var(--bd);color:var(--mu);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:.75rem;font-family:inherit}
+.sm-btn:hover{border-color:var(--acc);color:var(--acc)}
+/* badge */
+.badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:600;white-space:nowrap}
+.badge.g{background:rgba(34,197,94,.15);color:var(--gr)}
+.badge.a{background:rgba(245,158,11,.15);color:var(--am)}
+.badge.r{background:rgba(239,68,68,.15);color:var(--re)}
+/* allergen */
+.al-grid{display:flex;flex-wrap:wrap;gap:4px;max-width:360px}
+.al-lbl{display:flex;align-items:center;gap:3px;font-size:.72rem;cursor:pointer;user-select:none;white-space:nowrap}
+.al-lbl input{accent-color:var(--acc)}
+/* detail */
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.drow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bd);font-size:.85rem}
+.drow:last-child{border:none}
+.drow .dv{font-weight:600}
+/* allergen summary */
+.al-tbl{width:100%;border-collapse:collapse;font-size:.8rem}
+.al-tbl th{padding:7px 9px;background:var(--s2);text-align:left;color:var(--mu);font-size:.68rem;text-transform:uppercase}
+.al-tbl td{padding:6px 9px;border-top:1px solid var(--bd)}
+.pill{display:inline-block;background:rgba(108,143,255,.15);color:var(--acc);border-radius:4px;padding:1px 6px;margin:1px;font-size:.72rem;font-weight:500}
+/* export */
+.exp-btn{background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#fff;border-radius:9px;padding:11px 26px;cursor:pointer;font-size:.9rem;font-weight:600;display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:inherit}
+.exp-btn:hover{opacity:.85}
+#exp-out{display:none;margin-top:18px;background:var(--s);border:1px solid var(--bd);border-radius:10px;padding:18px;white-space:pre-wrap;font-family:'Courier New',monospace;font-size:.8rem;line-height:1.65}
+@media(max-width:680px){.metrics{grid-template-columns:1fr 1fr}.ev-grid{grid-template-columns:1fr}.dg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">🍺 Doppio Malto</div>
+    <h1>Event Margin Calculator</h1>
+  </div>
+</header>
+<div class="wrap">
+
+<!-- METRICS -->
+<div class="metrics">
+  <div class="mc"><div class="lbl">Ricavo Totale</div><div class="val" id="m-rev">€0</div><div class="sub">menu + add-on</div></div>
+  <div class="mc"><div class="lbl">Costo Totale</div><div class="val" id="m-cost">€0</div><div class="sub">merci + affitto</div></div>
+  <div class="mc" id="m-gp-card"><div class="lbl">Margine Lordo</div><div class="val" id="m-gp">€0</div><div class="sub" id="m-gp-sub">—</div></div>
+  <div class="mc" style="border-color:rgba(167,139,250,.3)"><div class="lbl">Partecipanti Totali</div><div class="val" id="m-pax" style="color:var(--acc2)">0</div><div class="sub">somma fasce</div></div>
+  <div class="bar-wrap">
+    <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--mu)"><span>Margine %</span><span id="bar-lbl">—</span></div>
+    <div class="bar-track"><div class="bar-fill" id="bar" style="width:0%;background:var(--gr)"></div></div>
+  </div>
+</div>
+
+<!-- EVENT INFO -->
+<div class="card">
+  <h2>📋 Info Evento</h2>
+  <div class="ev-grid">
+    <div>
+      <label for="ev-name">Nome Evento</label>
+      <input type="text" id="ev-name" placeholder="es. Cena Aziendale ABC" oninput="recalc()">
+    </div>
+    <div>
+      <label for="ev-rent">Affitto Sala (€)</label>
+      <input type="number" id="ev-rent" value="0" min="0" step="0.01" oninput="recalc()">
+    </div>
+  </div>
+</div>
+
+<!-- FASCE PARTECIPANTI -->
+<div class="card">
+  <h2>👥 Fasce di Partecipanti</h2>
+  <div id="fasce-rows"></div>
+  <div class="fasce-total">Totale partecipanti: <strong id="pax-total">0</strong></div>
+  <button class="add-btn" onclick="addFascia()">+ Aggiungi Fascia</button>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="sw('menu',this)">🍽 Menu</button>
+  <button class="tab" onclick="sw('addon',this)">➕ Add-on</button>
+  <button class="tab" onclick="sw('detail',this)">📊 Dettaglio</button>
+</div>
+
+<!-- TAB MENU -->
+<div class="tp active" id="tab-menu">
+  <div class="tw">
+    <table>
+      <thead><tr><th>Voce Menu</th><th>Ingredienti</th><th>Prezzo Vendita (€)</th><th>Costo Merce (€)</th><th>Margine %</th><th>Allergeni</th><th></th></tr></thead>
+      <tbody id="menu-body"></tbody>
+    </table>
+  </div>
+  <button class="add-btn" onclick="addMenu()">+ Aggiungi Voce</button>
+</div>
+
+<!-- TAB ADDON -->
+<div class="tp" id="tab-addon">
+  <div class="tw">
+    <table>
+      <thead><tr><th>Prodotto</th><th>Tipo</th><th>Prezzo Unit. (€)</th><th>Quantità</th><th>Totale</th><th></th></tr></thead>
+      <tbody id="addon-body"></tbody>
+    </table>
+  </div>
+  <button class="add-btn" onclick="addAddon()">+ Aggiungi Add-on</button>
+</div>
+
+<!-- TAB DETAIL -->
+<div class="tp" id="tab-detail">
+  <div class="dg">
+    <div class="card" style="margin:0">
+      <h2>💰 Ricavi</h2>
+      <div id="d-rev-rows"></div>
+      <div class="drow" style="margin-top:8px;font-weight:700"><span>TOTALE</span><span class="dv" id="d-tot-rev" style="color:var(--gr)">€0</span></div>
+    </div>
+    <div class="card" style="margin:0">
+      <h2>💸 Costi</h2>
+      <div id="d-cost-rows"></div>
+      <div class="drow" style="margin-top:8px;font-weight:700"><span>TOTALE</span><span class="dv" id="d-tot-cost" style="color:var(--re)">€0</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>⚠️ Riepilogo Allergeni Evento</h2>
+    <div id="al-summary"><p style="color:var(--mu);font-size:.82rem">Nessun allergene selezionato.</p></div>
+  </div>
+  <button class="exp-btn" onclick="exportRep()">Esporta Riepilogo ↗</button>
+  <pre id="exp-out"></pre>
+</div>
+
+</div><!-- /wrap -->
+<script>
+const ALS=['Glutine','Crostacei','Uova','Pesce','Arachidi','Soia','Latte','Frutta a guscio','Sedano','Senape','Sesamo','Solfiti','Lupini','Molluschi'];
+let fRows=[],mRows=[],aRows=[],rid=0;
+const uid=()=>++rid;
+const fmt=n=>n.toFixed(2);
+const $=id=>document.getElementById(id);
+
+/* ── FASCE ── */
+function addFascia(name='Standard',cnt=0){
+  const id=uid(); fRows.push(id);
+  const d=document.getElementById('fasce-rows');
+  const row=document.createElement('div');
+  row.id='fr-'+id; row.className='fasce-grid';
+  row.innerHTML=`
+    <div><label>Nome Fascia</label><input type="text" id="fn-${id}" value="${name}" oninput="recalc()"></div>
+    <div><label>Persone</label><input type="number" id="fc-${id}" value="${cnt}" min="0" oninput="recalc()"></div>
+    <div style="padding-top:20px"><button class="del" onclick="delFascia(${id})">✕</button></div>`;
+  d.appendChild(row); recalc();
+}
+function delFascia(id){fRows=fRows.filter(r=>r!==id);$('fr-'+id)?.remove();recalc();}
+
+/* ── MENU ── */
+function addMenu(){
+  const id=uid(); mRows.push(id);
+  const tb=$('menu-body');
+  const tr=document.createElement('tr'); tr.id='mr-'+id;
+  tr.innerHTML=`
+    <td><input type="text" id="mn-${id}" placeholder="Nome voce" oninput="recalc()"></td>
+    <td><input type="text" id="mi-${id}" placeholder="Ingredienti" oninput="recalc()"></td>
+    <td><input type="number" id="mp-${id}" value="0" min="0" step="0.01" oninput="recalc()" style="width:90px"></td>
+    <td><input type="number" id="mc-${id}" value="0" min="0" step="0.01" oninput="recalc()" style="width:90px"></td>
+    <td><span id="mm-${id}" class="badge r">—</span></td>
+    <td><div class="al-grid">${ALS.map((a,i)=>`<label class="al-lbl"><input type="checkbox" id="al-${id}-${i}" onchange="recalc()"> ${a}</label>`).join('')}</div></td>
+    <td><button class="del" onclick="delMenu(${id})">✕</button></td>`;
+  tb.appendChild(tr); recalc();
+}
+function delMenu(id){mRows=mRows.filter(r=>r!==id);$('mr-'+id)?.remove();recalc();}
+function getAls(id){return ALS.filter((_,i)=>{const e=$(`al-${id}-${i}`);return e&&e.checked;});}
+
+/* ── ADDON ── */
+function addAddon(){
+  const id=uid(); aRows.push(id);
+  const tb=$('addon-body');
+  const tr=document.createElement('tr'); tr.id='ar-'+id;
+  tr.innerHTML=`
+    <td><input type="text" id="an-${id}" placeholder="Prodotto" oninput="recalc()"></td>
+    <td><select id="at-${id}" onchange="recalc()"><option value="pax">Per Persona</option><option value="fixed">Fisso Evento</option></select></td>
+    <td><input type="number" id="ap-${id}" value="0" min="0" step="0.01" oninput="recalc()" style="width:100px"></td>
+    <td><input type="number" id="aq-${id}" value="1" min="1" oninput="recalc()" style="width:70px"></td>
+    <td><strong id="at2-${id}" style="color:var(--acc2)">€0.00</strong></td>
+    <td><button class="del" onclick="delAddon(${id})">✕</button></td>`;
+  tb.appendChild(tr); recalc();
+}
+function delAddon(id){aRows=aRows.filter(r=>r!==id);$('ar-'+id)?.remove();recalc();}
+
+/* ── RECALC ── */
+function recalc(){
+  // pax from fasce
+  const pax=fRows.reduce((s,id)=>s+(parseFloat($('fc-'+id)?.value)||0),0);
+  $('pax-total').textContent=pax;
+  $('m-pax').textContent=pax;
+  const rent=parseFloat($('ev-rent').value)||0;
+
+  let mRev=0,mCost=0;
+  mRows.forEach(id=>{
+    const p=parseFloat($('mp-'+id)?.value)||0;
+    const c=parseFloat($('mc-'+id)?.value)||0;
+    mRev+=p*pax; mCost+=c*pax;
+    const b=$('mm-'+id);
+    if(b){const mp=p>0?((p-c)/p)*100:0; b.textContent=p>0?mp.toFixed(1)+'%':'—'; b.className='badge '+(mp>=60?'g':mp>=40?'a':'r');}
+  });
+
+  let aRev=0;
+  aRows.forEach(id=>{
+    const type=$('at-'+id)?.value;
+    const p=parseFloat($('ap-'+id)?.value)||0;
+    const q=parseFloat($('aq-'+id)?.value)||1;
+    const mult=type==='pax'?pax*q:q;
+    const tot=p*mult;
+    const el=$('at2-'+id); if(el) el.textContent='€'+fmt(tot);
+    aRev+=tot;
+  });
+
+  const totRev=mRev+aRev;
+  const totCost=mCost+rent;
+  const gp=totRev-totCost;
+  const gpPct=totRev>0?(gp/totRev)*100:0;
+
+  $('m-rev').textContent='€'+fmt(totRev);
+  $('m-cost').textContent='€'+fmt(totCost);
+  $('m-gp').textContent='€'+fmt(gp);
+  $('m-gp-sub').textContent=gpPct.toFixed(1)+'%';
+  const gc=$('m-gp-card'); gc.className='mc '+(gpPct>=60?'gr':gpPct>=40?'am':'re');
+  const bar=$('bar');
+  bar.style.width=Math.min(100,Math.max(0,gpPct)).toFixed(1)+'%';
+  bar.style.background=gpPct>=60?'var(--gr)':gpPct>=40?'var(--am)':'var(--re)';
+  $('bar-lbl').textContent=gpPct.toFixed(1)+'%';
+
+  updateDetail(mRev,aRev,mCost,rent,totRev,totCost,pax);
+}
+
+function dr(label,val){return `<div class="drow"><span>${label}</span><span class="dv">€${fmt(val)}</span></div>`;}
+
+function updateDetail(mRev,aRev,mCost,rent,totRev,totCost,pax){
+  let rH='',cH='';
+  mRows.forEach(id=>{
+    const n=$('mn-'+id)?.value||'Voce';
+    const p=parseFloat($('mp-'+id)?.value)||0;
+    const c=parseFloat($('mc-'+id)?.value)||0;
+    rH+=dr(n+' × '+pax,p*pax);
+    cH+=dr('Merce: '+n+' × '+pax,c*pax);
+  });
+  aRows.forEach(id=>{
+    const n=$('an-'+id)?.value||'Add-on';
+    const type=$('at-'+id)?.value;
+    const p=parseFloat($('ap-'+id)?.value)||0;
+    const q=parseFloat($('aq-'+id)?.value)||1;
+    const mult=type==='pax'?pax*q:q;
+    rH+=dr(n,p*mult);
+  });
+  if(rent>0) cH+=dr('Affitto Sala',rent);
+  $('d-rev-rows').innerHTML=rH||'<div style="color:var(--mu);font-size:.82rem;padding:6px 0">Nessuna voce.</div>';
+  $('d-cost-rows').innerHTML=cH||'<div style="color:var(--mu);font-size:.82rem;padding:6px 0">Nessun costo.</div>';
+  $('d-tot-rev').textContent='€'+fmt(totRev);
+  $('d-tot-cost').textContent='€'+fmt(totCost);
+
+  // allergens
+  const map={};
+  mRows.forEach(id=>{
+    const n=$('mn-'+id)?.value||'Voce'; const als=getAls(id);
+    if(als.length) map[n]=als;
+  });
+  if(!Object.keys(map).length){
+    $('al-summary').innerHTML='<p style="color:var(--mu);font-size:.82rem">Nessun allergene selezionato.</p>';
+  } else {
+    let html='<table class="al-tbl"><thead><tr><th>Voce Menu</th><th>Allergeni</th></tr></thead><tbody>';
+    for(const[n,als] of Object.entries(map))
+      html+=`<tr><td>${n}</td><td>${als.map(a=>`<span class="pill">${a}</span>`).join('')}</td></tr>`;
+    $('al-summary').innerHTML=html+'</tbody></table>';
+  }
+}
+
+/* ── TABS ── */
+function sw(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  $('tab-'+name).classList.add('active');
+  if(name==='detail') recalc();
+}
+
+/* ── EXPORT ── */
+function exportRep(){
+  const name=$('ev-name').value||'Evento';
+  const rent=parseFloat($('ev-rent').value)||0;
+  const pax=fRows.reduce((s,id)=>s+(parseFloat($('fc-'+id)?.value)||0),0);
+  const date=new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});
+  let L=[];
+  L.push('╔══════════════════════════════════════════════════╗');
+  L.push('║     ANTIGRAVITY — REPORT EVENTO                  ║');
+  L.push('║     Documento generato il '+date.padEnd(22)+'║');
+  L.push('╚══════════════════════════════════════════════════╝');
+  L.push('');
+  L.push('EVENTO: '+name);
+  L.push('');
+  L.push('PARTECIPANTI');
+  L.push('─'.repeat(50));
+  fRows.forEach(id=>{
+    const fn=$('fn-'+id)?.value||'Fascia';
+    const fc=$('fc-'+id)?.value||'0';
+    L.push(`  • ${fn}: ${fc} persone`);
+  });
+  L.push(`  Totale: ${pax} persone`);
+  L.push('');
+  L.push('MENU');
+  L.push('─'.repeat(50));
+  mRows.forEach(id=>{
+    const n=$('mn-'+id)?.value||'—';
+    const p=parseFloat($('mp-'+id)?.value)||0;
+    const c=parseFloat($('mc-'+id)?.value)||0;
+    const mp=p>0?((p-c)/p*100).toFixed(1):'—';
+    const als=getAls(id);
+    L.push(`  • ${n}: €${fmt(p)} vendita / €${fmt(c)} costo → margine ${mp}% → totale €${fmt(p*pax)}`);
+    if(als.length) L.push('    Allergeni: '+als.join(', '));
+  });
+  if(!mRows.length) L.push('  (nessuna voce)');
+  L.push('');
+  L.push('ADD-ON');
+  L.push('─'.repeat(50));
+  aRows.forEach(id=>{
+    const n=$('an-'+id)?.value||'—';
+    const type=$('at-'+id)?.value==='pax'?'per persona':'fisso';
+    const tot=$('at2-'+id)?.textContent||'€0';
+    L.push(`  • ${n} [${type}] → totale ${tot}`);
+  });
+  if(!aRows.length) L.push('  (nessuno)');
+  L.push('');
+  L.push('RIEPILOGO ECONOMICO');
+  L.push('─'.repeat(50));
+  L.push('  Ricavo Totale  : '+$('m-rev').textContent);
+  L.push('  Costo Totale   : '+$('m-cost').textContent);
+  L.push('  Affitto Sala   : €'+fmt(rent));
+  L.push('  Margine Lordo  : '+$('m-gp').textContent+' ('+$('m-gp-sub').textContent+')');
+  L.push('═'.repeat(50));
+
+  const out=$('exp-out');
+  out.textContent=L.join('\n'); out.style.display='block';
+  out.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// init
+addFascia('Adulti',0);
+addFascia('Bambini',0);
+addMenu();
+addAddon();
+recalc();
+</script>
+</body>
+</html>
