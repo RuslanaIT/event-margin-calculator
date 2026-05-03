@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity — Professional Admin Backend</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --sidebar-bg: #111111;
+            --card-bg: #161616;
+            --border: #222222;
+            --gold: #d4af37;
+            --gold-bright: #f1c40f;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --green: #2ecc71;
+            --amber: #f39c12;
+            --red: #e74c3c;
+            --sidebar-width: 260px;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 24px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-box {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--gold), #8a6d1a);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            color: #000;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        .nav-list {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-item {
+            padding: 2px 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: var(--glass);
+        }
+
+        .nav-link.active {
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.08);
+            box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-link i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #333;
+            border: 1px solid var(--gold);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        header {
+            height: 72px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 10;
+        }
+
+        .header-title h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #8a6d1a);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        /* --- SECTIONS --- */
+        .content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.02) 0%, transparent 80%),
+                linear-gradient(rgba(20, 20, 20, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(20, 20, 20, 0.5) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- DASHBOARD GRID --- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, transparent 50%, rgba(212, 175, 55, 0.1) 50%);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .kpi-trend {
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up { color: var(--green); }
+        .trend-down { color: var(--red); }
+
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        /* --- CARDS & TABLES --- */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            color: var(--gold);
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        td {
+            padding: 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* --- BADGES --- */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-green { background: rgba(46, 204, 113, 0.1); color: var(--green); border: 1px solid rgba(46, 204, 113, 0.2); }
+        .badge-amber { background: rgba(243, 156, 18, 0.1); color: var(--amber); border: 1px solid rgba(243, 156, 18, 0.2); }
+        .badge-red { background: rgba(231, 76, 60, 0.1); color: var(--red); border: 1px solid rgba(231, 76, 60, 0.2); }
+        .badge-gold { background: rgba(212, 175, 55, 0.1); color: var(--gold); border: 1px solid rgba(212, 175, 55, 0.2); }
+
+        /* --- MONO DATA --- */
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* --- CHART STUBS --- */
+        .chart-stub {
+            height: 300px;
+            width: 100%;
+            background: linear-gradient(to bottom, rgba(212, 175, 55, 0.05), transparent);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--gold), #8a6d1a);
+            border-radius: 4px 4px 0 0;
+            transition: height 1s;
+        }
+
+        /* --- MODALS --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            background: #121212;
+            border: 1px solid var(--border);
+            width: 500px;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--gold);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-box">A</div>
+            <span class="logo-text">ANTIGRAVITY</span>
+        </div>
+        
+        <nav class="nav-list">
+            <div class="nav-item">
+                <a href="#" class="nav-link active" onclick="showSection('dashboard', this)">
+                    <i>📊</i> Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('events', this)">
+                    <i>🗓</i> Gestione Eventi
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('menu', this)">
+                    <i>📖</i> Libreria Menu
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('clients', this)">
+                    <i>👤</i> Clienti
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('kpi', this)">
+                    <i>📈</i> Margini & KPI
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('allergens', this)">
+                    <i>⚠️</i> Allergeni
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('settings', this)">
+                    <i>⚙️</i> Impostazioni
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-avatar"></div>
+            <div>
+                <div style="font-size: 14px; font-weight: 600;">Admin User</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Doppio Malto Italy</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+        <header>
+            <div class="header-title">
+                <h1 id="page-title">Dashboard</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn-gold" onclick="openModal('modal-event')">+ NUOVO EVENTO</button>
+            </div>
+        </header>
+
+        <div class="content-scroll">
+            
+            <!-- SECTION: DASHBOARD -->
+            <section id="section-dashboard" class="section active">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Ricavo Mensile</div>
+                        <div class="kpi-value">€ 42.680</div>
+                        <div class="kpi-trend trend-up">▲ 12% vs last month</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Margine Medio</div>
+                        <div class="kpi-value">58.4%</div>
+                        <div class="kpi-trend trend-up">▲ 2.1% improvement</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Eventi Attivi</div>
+                        <div class="kpi-value">24</div>
+                        <div class="kpi-trend">8 in fase di setup</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Costo Merci Totale</div>
+                        <div class="kpi-value">€ 14.210</div>
+                        <div class="kpi-trend trend-down">▼ 4% optimization</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-row">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Andamento Margini ultimi eventi</h2>
+                        </div>
+                        <div class="chart-stub">
+                            <div class="bar" style="height: 60%"></div>
+                            <div class="bar" style="height: 45%"></div>
+                            <div class="bar" style="height: 75%"></div>
+                            <div class="bar" style="height: 55%"></div>
+                            <div class="bar" style="height: 65%"></div>
+                            <div class="bar" style="height: 80%"></div>
+                            <div class="bar" style="height: 70%"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Attività Recente</h2>
+                        </div>
+                        <ul style="list-style: none;">
+                            <li style="padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px;">
+                                <div style="font-size: 13px; color: #fff;">Nuovo evento confermato: <strong>Google Milan</strong></div>
+                                <div style="font-size: 11px; color: var(--text-muted);">2 ore fa</div>
+                            </li>
+                            <li style="padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px;">
+                                <div style="font-size: 13px; color: #fff;">Margine basso rilevato in <strong>Compleanno Luca</strong></div>
+                                <div style="font-size: 11px; color: var(--red);">Rischio: 38%</div>
+                            </li>
+                            <li>
+                                <div style="font-size: 13px; color: #fff;">Importazione catalogo completata</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Ieri, 18:45</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Prossimi Eventi</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Evento</th>
+                                    <th>Pax</th>
+                                    <th>Ricavo</th>
+                                    <th>Costo</th>
+                                    <th>Margine %</th>
+                                    <th>Stato</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="mono">12/05</td>
+                                    <td>Cena Aziendale Rolex</td>
+                                    <td class="mono">80</td>
+                                    <td class="mono">€ 4.500</td>
+                                    <td class="mono">€ 1.800</td>
+                                    <td><span class="badge badge-green">60%</span></td>
+                                    <td><span class="badge badge-gold">Confermato</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="mono">15/05</td>
+                                    <td>Matrimonio White</td>
+                                    <td class="mono">120</td>
+                                    <td class="mono">€ 7.200</td>
+                                    <td class="mono">€ 3.100</td>
+                                    <td><span class="badge badge-amber">57%</span></td>
+                                    <td><span class="badge badge-gold">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="mono">18/05</td>
+                                    <td>Party Estivo DM</td>
+                                    <td class="mono">250</td>
+                                    <td class="mono">€ 10.000</td>
+                                    <td class="mono">€ 6.200</td>
+                                    <td><span class="badge badge-red">38%</span></td>
+                                    <td><span class="badge badge-gold">Bozza</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: MENU LIBRARY -->
+            <section id="section-menu" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Catalogo Prodotti</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-gold" style="background: transparent; border: 1px solid var(--gold); color: var(--gold);" onclick="downloadCSV()">EXPORT CSV</button>
+                            <button class="btn-gold" onclick="openModal('modal-product')">+ NUOVO PIATTO</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table id="menu-table">
+                            <thead>
+                                <tr>
+                                    <th>Piatto</th>
+                                    <th>Categoria</th>
+                                    <th>Costo Merce</th>
+                                    <th>Prezzo Vendita</th>
+                                    <th>Margine</th>
+                                    <th>Allergeni</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="menu-tbody">
+                                <!-- Data will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: SETTINGS -->
+            <section id="section-settings" class="section">
+                <div class="card">
+                    <h2 class="card-title" style="margin-bottom: 24px;">Configurazione Soglie Margine</h2>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+                        <div class="form-group">
+                            <label>Soglia Ottimale (Verde)</label>
+                            <input type="number" value="60" id="threshold-green">
+                        </div>
+                        <div class="form-group">
+                            <label>Soglia Attenzione (Ambra)</label>
+                            <input type="number" value="40" id="threshold-amber">
+                        </div>
+                        <div class="form-group">
+                            <label>Valuta di Riferimento</label>
+                            <select>
+                                <option>EUR (€)</option>
+                                <option>USD ($)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL EVENTO -->
+    <div class="modal-overlay" id="modal-event">
+        <div class="modal">
+            <h2 class="card-title" style="margin-bottom: 24px;">Nuovo Evento Professionale</h2>
+            <div class="form-group">
+                <label>Nome Evento</label>
+                <input type="text" placeholder="es. Grand Opening Milan">
+            </div>
+            <div class="form-group">
+                <label>Data Prevista</label>
+                <input type="date">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 32px;">
+                <button class="btn-gold" style="flex: 1;" onclick="closeModal('modal-event')">CREA EVENTO</button>
+                <button class="btn-gold" style="background: transparent; border: 1px solid var(--red); color: var(--red); flex: 0.5;" onclick="closeModal('modal-event')">ANNULLA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PRODOTTO -->
+    <div class="modal-overlay" id="modal-product">
+        <div class="modal">
+            <h2 class="card-title" style="margin-bottom: 24px;">Configurazione Piatto</h2>
+            <div class="form-group">
+                <label>Nome Piatto</label>
+                <input type="text" id="new-p-name">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label>Costo Merce (€)</label>
+                    <input type="number" id="new-p-cost" oninput="calcNewMargin()">
+                </div>
+                <div class="form-group">
+                    <label>Prezzo Vendita (€)</label>
+                    <input type="number" id="new-p-price" oninput="calcNewMargin()">
+                </div>
+            </div>
+            <div style="padding: 16px; background: var(--sidebar-bg); border-radius: 8px; margin-bottom: 24px; text-align: center;">
+                <div style="font-size: 11px; color: var(--text-muted);">MARGINE CALCOLATO</div>
+                <div id="new-p-margin" style="font-size: 24px; font-weight: 800; color: var(--gold);">0%</div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-gold" style="flex: 1;" onclick="addProduct()">SALVA NEL CATALOGO</button>
+                <button class="btn-gold" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); flex: 0.5;" onclick="closeModal('modal-product')">ESCI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DATA INITIALIZATION
+        let menuData = [
+            { id: 1, name: "Burger Classic", cat: "Burger", cost: 5.20, price: 14.50, als: ["Glutine", "Lattosio"] },
+            { id: 2, name: "Tagliata Classica", cat: "Brace", cost: 8.40, price: 21.80, als: [] },
+            { id: 3, name: "Pizza Margherita", cat: "Pizze", cost: 1.80, price: 7.80, als: ["Glutine", "Lattosio"] },
+            { id: 4, name: "Birra 0.4L", cat: "Bevande", cost: 1.20, price: 6.00, als: ["Glutine"] },
+            { id: 5, name: "Tiramisù", cat: "Dessert", cost: 2.10, price: 6.50, als: ["Uova", "Lattosio"] }
+        ];
+
+        // SECTION NAVIGATION
+        function showSection(id, el) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            document.getElementById('section-' + id).classList.add('active');
+            el.classList.add('active');
+            
+            const titleMap = {
+                dashboard: 'Dashboard Analitica',
+                events: 'Gestione Eventi',
+                menu: 'Libreria Menu & Prodotti',
+                clients: 'Database Clienti',
+                kpi: 'Analisi Margini & KPI',
+                allergens: 'Compliance Allergeni UE',
+                settings: 'Impostazioni Sistema'
+            };
+            document.getElementById('page-title').textContent = titleMap[id];
+
+            if (id === 'menu') renderMenu();
+        }
+
+        // MODALS
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // RENDER MENU
+        function renderMenu() {
+            const tbody = document.getElementById('menu-tbody');
+            tbody.innerHTML = '';
+            
+            menuData.forEach(p => {
+                const margin = ((p.price - p.cost) / p.price * 100);
+                const badgeClass = margin >= 60 ? 'badge-green' : (margin >= 40 ? 'badge-amber' : 'badge-red');
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 600;">${p.name}</td>
+                        <td><span class="badge" style="background: rgba(255,255,255,0.05); color: #fff;">${p.cat}</span></td>
+                        <td class="mono">€ ${p.cost.toFixed(2)}</td>
+                        <td class="mono">€ ${p.price.toFixed(2)}</td>
+                        <td><span class="badge ${badgeClass}">${margin.toFixed(0)}%</span></td>
+                        <td>${p.als.map(a => `<span style="font-size: 10px; color: var(--text-muted); margin-right: 4px;">• ${a}</span>`).join('')}</td>
+                        <td style="text-align: right;">
+                            <button onclick="editProduct(${p.id})" style="background: none; border: none; color: var(--gold); cursor: pointer; font-size: 16px;">✎</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // REAL-TIME CALCULATIONS
+        function calcNewMargin() {
+            const c = parseFloat(document.getElementById('new-p-cost').value) || 0;
+            const p = parseFloat(document.getElementById('new-p-price').value) || 0;
+            const resEl = document.getElementById('new-p-margin');
+            
+            if (p > 0) {
+                const m = ((p - c) / p * 100);
+                resEl.textContent = m.toFixed(0) + '%';
+                resEl.style.color = m >= 60 ? 'var(--green)' : (m >= 40 ? 'var(--amber)' : 'var(--red)');
+            } else {
+                resEl.textContent = '0%';
+                resEl.style.color = 'var(--gold)';
+            }
+        }
+
+        function addProduct() {
+            const n = document.getElementById('new-p-name').value;
+            const c = parseFloat(document.getElementById('new-p-cost').value) || 0;
+            const p = parseFloat(document.getElementById('new-p-price').value) || 0;
+            
+            if (n && p > 0) {
+                menuData.push({ id: Date.now(), name: n, cat: "Nuovo", cost: c, price: p, als: [] });
+                renderMenu();
+                closeModal('modal-product');
+                alert("Prodotto aggiunto con successo al catalogo.");
+            }
+        }
+
+        function downloadCSV() {
+            let csv = "Piatto,Categoria,Costo,Prezzo\n";
+            menuData.forEach(p => csv += `${p.name},${p.cat},${p.cost},${p.price}\n`);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'menu_antigravity.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // INITIAL LOAD
+        window.onload = () => {
+            renderMenu();
+        };
+
+    </script>
+</body>
+</html>
